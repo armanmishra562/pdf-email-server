@@ -1,8 +1,6 @@
 const env = {
   port: process.env.PORT || 5000,
   nodeEnv: process.env.NODE_ENV || "development",
-  // Used for generating absolute URLs in emails (e.g., verification links).
-  // Set PUBLIC_URL in production; falls back to localhost + current port.
   publicUrl:
     process.env.PUBLIC_URL ||
     `http://localhost:${process.env.PORT || 5000}`,
