@@ -26,7 +26,8 @@ app.use(
 );
 
 //  body parser with limit
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ limit: "500kb" }));
+app.use(express.urlencoded({ extended: true, limit: "500kb" }));
 
 //  logging
 app.use(morgan('dev'));

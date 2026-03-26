@@ -16,6 +16,8 @@
     
     # Generate Prisma client
     RUN npx prisma generate
+
+    RUN npx puppeteer browsers install chrome
     
     # Build TypeScript
     RUN pnpm build
@@ -40,6 +42,8 @@ COPY prisma ./prisma
 
 # Generate Prisma client AGAIN (important)
 RUN npx prisma generate
+
+RUN npx puppeteer browsers install chrome
 
 # Copy built app
 COPY --from=builder /app/dist ./dist

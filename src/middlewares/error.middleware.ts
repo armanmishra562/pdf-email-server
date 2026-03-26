@@ -35,6 +35,13 @@ const errorMiddleware = (
     message = "Token expired";
   }
 
+  // Body parser JSON error (common when raw multiline HTML is sent as JSON).
+  if (err.type === "entity.parse.failed") {
+    statusCode = 400;
+    message =
+      "Invalid JSON payload. For raw multiline HTML, use x-www-form-urlencoded with an `html` field (or send properly escaped JSON string).";
+  }
+
   res.status(statusCode).json({
     success: false,
     message,

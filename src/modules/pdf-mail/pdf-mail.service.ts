@@ -15,6 +15,34 @@ interface GenerateAndSendPdfInput {
 }
 
 class PdfMailService {
+  private formatHtmlForPdf(rawHtml: string): string {
+    const normalized = rawHtml
+      .replace(/^\uFEFF/, "") // remove BOM if present
+      .replace(/\r\n/g, "\n")
+      .trim();
+
+    if (!normalized) {
+      throw new AppError("HTML content is required", 400);
+    }
+
+    const hasHtmlTag = /<html[\s>]/i.test(normalized);
+    if (hasHtmlTag) {
+      return normalized;
+    }
+
+    // If user sends only a snippet, wrap it so Puppeteer renders predictably.
+    return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Generated PDF</title>
+  </head>
+  <body>
+    ${normalized}
+  </body>
+</html>`;
+  }
+
   private async createPdfFromHtml(html: string, outputPath: string): Promise<void> {
     let browser: Awaited<ReturnType<typeof puppeteer.launch>>;
     try {
@@ -56,7 +84,8 @@ class PdfMailService {
         request.abort();
       });
 
-      await page.setContent(html, { waitUntil: "domcontentloaded" });
+      const formattedHtml = this.formatHtmlForPdf(html);
+      await page.setContent(formattedHtml, { waitUntil: "domcontentloaded" });
       await page.pdf({
         path: outputPath,
         format: "A4",
